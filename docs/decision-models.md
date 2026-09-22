@@ -42,9 +42,9 @@ shorthands; `warm()` and `close()` open and release the backend.
 
 | `--model` | class | `name` | notes |
 |---|---|---|---|
-| `jev` | `JevModel(transport)` | `jev` | the request body every front sent before the layer existed, byte for byte; `from_env` picks TypeSafe or the OpenRouter proxy |
-| `laya` | `LayaModel(agent, model=)` | `laya` | one forward pass per call on a thread; `MODEL_SERVICE_CONFIG_ERROR` when `input_tokens` fills the window (Laya cuts the state silently; `LAYA_MAX_LEN`, `LAYA_HEAD_MAX_LEN` widen it); `ValueError` and `RuntimeError` from the library become `MODEL_CALL_FAILED` |
-| `cua` | `CuaS1Model(scorer, collator, model=, context_bytes=, option_bytes=)` | `cua` | Cua-S1 Nano, one `score_elements` pass per request on a thread; choice questions only, text only, deterministic; the context is header, state and rules; the checkpoint reads its first 256 bytes, and the first overflowing request logs one warning; `from_env` reads `CUA_S1_CHECKPOINT`, `CUA_S1_SUBFOLDER`, `CUA_S1_DEVICE` |
+| `jev` | `JevModel(transport)` | `jev` | the request body every front sent before the layer existed, byte for byte; `from_env` picks TypeSafe or the OpenRouter proxy (see [configuration.md](configuration.md)) |
+| `laya` | `LayaModel(agent, model=)` | `laya` | one forward pass per call on a thread; `MODEL_SERVICE_CONFIG_ERROR` when `input_tokens` fills the window (Laya cuts the state silently; see `LAYA_MAX_LEN` and `LAYA_HEAD_MAX_LEN` in [configuration.md](configuration.md)); `ValueError` and `RuntimeError` from the library become `MODEL_CALL_FAILED` |
+| `cua` | `CuaS1Model(scorer, collator, model=, context_bytes=, option_bytes=)` | `cua` | Cua-S1 Nano, one `score_elements` pass per request on a thread; choice questions only, text only, deterministic; the context is header, state and rules; the checkpoint reads its first 256 bytes, and the first overflowing request logs one warning; `from_env` reads `CUA_S1_*` (see [configuration.md](configuration.md)) |
 | `random` | `RandomModel(seed)` | `random` | uniform over the offered keys, confidence 0, one seeded stream per episode; choice questions only |
 | `rule` | `RuleModel(name, rule)` | the rule's name | one-hot, confidence 1; a key outside the menu raises `RuntimeError`, a bug in the rule |
 
@@ -53,8 +53,8 @@ shorthands; `warm()` and `close()` open and release the backend.
 TypeSafe Jev answers `--model jev`. One request holds a `state` and one or more questions over options the caller
 enumerates; the answer holds one option per question, a probability per option and a confidence, from one forward
 pass, with no free text. Three heads: `choice` picks one key among the options, `noul` gives the probability that a
-statement holds, `score` places the state on an ordered rubric. Input is capped at 32K tokens; the endpoint is
-`api.typesafe.ai` with `TYPESAFE_API_KEY`, or OpenRouter's `typesafe/jev-1.13` on `/api/alpha/decisions`. Latency and
+statement holds, `score` places the state on an ordered rubric. Input is capped at 32K tokens; endpoint configuration
+and API keys are referenced in [configuration.md](configuration.md). Latency and
 price: `benchmarks.md`. Laya (Convai Innovations, open weights, 0.4B parameters) and Cua-S1 Nano (Cua, 855K
 parameters) answer the same `choice` question in process.
 

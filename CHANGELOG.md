@@ -14,6 +14,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
 
 ### Added
 
+- Consolidated configuration reference table in docs/configuration.md detailing every environment variable, default value, and reader subsystem.
 - Nine agents through the CLI and the MCP server: `allrecipes` and `flights` (browser use), `desktop` (computer use
   on Windows or macOS), `ticket_router` (30 labelled tickets to five queues), `blackjack`, `game2048`, `millionaire`,
   `alfworld` (games and embodied text), `injection_guard` (rail).
