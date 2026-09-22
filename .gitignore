@@ -1,0 +1,21 @@
+.venv*/
+.mypy_cache/
+__pycache__/
+*.pyc
+.env
+logs/
+.pytest_cache/
+.ruff_cache/
+dist/
+runs/
+.playwright-mcp/
+.external/
+evals/results/
+evals/showcase/
+evals/millionaire/questions.json
+
+# bug-hunt workspace
+.claude/bug-hunt/
+.DS_Store
+.claude/settings.local.json
+*.egg-info/
