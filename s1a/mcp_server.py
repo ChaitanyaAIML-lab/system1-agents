@@ -23,8 +23,8 @@ INSTRUCTIONS = (
     "S1A agents: System 1 decision models (TypeSafe Jev, Laya, Cua-S1) in the model slot of openJiuwen agents. Use run_agent for a page task with enumerable "
     "controls, a game or a quiz, and decide for one selection over options you enumerate. Not for arithmetic, "
     "constraint puzzles or free-text generation. list_agents gives every agent's flags: a browser agent takes "
-    "--slot jev --goal '...' and needs a chat-model key (OPENAI_API_KEY or LLM_API_KEY plus MODEL_NAME), a Jev key "
-    "(TYPESAFE_API_KEY or OPENROUTER_API_KEY) and Node for @playwright/mcp; a tool agent takes --slot, --rethink and "
+    "--model jev --goal '...' and needs a chat-model key (OPENAI_API_KEY or LLM_API_KEY plus MODEL_NAME), a Jev key "
+    "(TYPESAFE_API_KEY or OPENROUTER_API_KEY) and Node for @playwright/mcp; a tool agent takes --model, --rethink and "
     "--episodes; a rail takes --labelled-set. Runs go one at a time per server."
 )
 
@@ -74,7 +74,7 @@ def _agent_rows() -> list[dict[str, Any]]:
 
 @server.tool()
 async def run_agent(name: str, flags: list[str]) -> dict[str, Any]:
-    """Run one agent with the flags `s1a run <name>` takes, e.g. ["--slot", "jev", "--goal", "..."].
+    """Run one agent with the flags `s1a run <name>` takes, e.g. ["--model", "jev", "--goal", "..."].
 
     A browser agent returns its answer, a tool agent its series summary with the job folder it wrote, a rail its
     evaluation summary.

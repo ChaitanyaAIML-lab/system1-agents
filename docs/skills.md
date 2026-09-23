@@ -40,15 +40,15 @@ uv run s1a decide \
 
 One JSON object comes back in about 400 ms: `choice`, a probability per queue, `confidence` and `ms`. The shipped
 `ticket_router` agent uses the same queues and rules: it routes a seeded batch of 30 labelled tickets and scores the
-correct routes. The first row of the README's table is one such batch on each slot:
+correct routes. The first row of the README's table is one such batch with each model:
 
 ```bash
-uv run s1a run ticket_router --slot jev --rethink off --episodes 1
-uv run s1a run ticket_router --slot llm --rethink off --episodes 1
+uv run s1a run ticket_router --model jev --rethink off --episodes 1
+uv run s1a run ticket_router --model llm --rethink off --episodes 1
 ```
 
 A page task goes the same way. The prompt names the site, the values to enter and the stop condition; the skill
-runs `s1a run flights --slot jev --goal "..."` and reads the answer from `final` in the JSON.
+runs `s1a run flights --model jev --goal "..."` and reads the answer from `final` in the JSON.
 
 ### What to delegate
 
@@ -74,7 +74,7 @@ codex mcp add s1a -- uv run --project /path/to/system1-agents s1a-mcp
 `s1a-mcp` serves the same agents over stdio as three tools. `list_agents()` returns every agent with its front, its
 description and the flags `run_agent` accepts for it; an agent whose optional dependency is missing is listed as
 unavailable with the error. `run_agent(name, flags)` runs one agent with the flags of `s1a run <name>` and returns
-its JSON object. `decide(state, options, rules)` answers one choice question on the `jev` slot: the chosen key, a
+its JSON object. `decide(state, options, rules)` answers one choice question with `jev`: the chosen key, a
 probability per option, a confidence and the latency in ms.
 
 ## Build a System 1 agent
@@ -95,5 +95,5 @@ It produces the module, its test and a row in the agents table, and stops at the
    controls, a rail for one question at a hook of a running agent.
 4. Scaffold from the front's template under `s1a/agents/_templates/`, with the state-design rules from the skill's
    references.
-5. Verify one rung at a time: the offline test, then `--slot random`, `rule`, `jev` and `llm` on the same seeds, then
+5. Verify one rung at a time: the offline test, then `--model random`, `rule`, `jev` and `llm` on the same seeds, then
    the results table and the full suite.

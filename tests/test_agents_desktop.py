@@ -57,15 +57,15 @@ class TestPieces(TestCase):
 
     def test_the_flags_require_app_goal_and_expect_and_default_to_a_dry_run(self) -> None:
         args = series.parser(desktop.SPEC).parse_args(
-            ["--slot", "jev", "--rethink", "off", "--episodes", "1", *CALCULATOR]
+            ["--model", "jev", "--rethink", "off", "--episodes", "1", *CALCULATOR]
         )
         self.assertEqual((args.execute, args.plan, args.clear), (False, "", ""))
         with self.assertRaises(SystemExit):
-            series.parser(desktop.SPEC).parse_args(["--slot", "jev", "--rethink", "off", "--episodes", "1"])
+            series.parser(desktop.SPEC).parse_args(["--model", "jev", "--rethink", "off", "--episodes", "1"])
 
     def test_without_a_plan_there_is_no_rule_baseline(self) -> None:
         args = series.parser(desktop.SPEC).parse_args(
-            ["--slot", "rule", "--rethink", "off", "--episodes", "1", *CALCULATOR]
+            ["--model", "rule", "--rethink", "off", "--episodes", "1", *CALCULATOR]
         )
         with patch.object(desktop, "driver_from_env", lambda label: FakeCalculator()):
             self.assertIsNone(desktop.make_series(args).baseline)
@@ -121,7 +121,7 @@ class TestLaunch(IsolatedAsyncioTestCase):
 class TestThroughTheSeries(IsolatedAsyncioTestCase):
     async def _play(self, fake: FakeCalculator, *flags: str) -> tuple[dict, dict]:
         args = series.parser(desktop.SPEC).parse_args(
-            ["--slot", "rule", "--rethink", "off", "--episodes", "1", *CALCULATOR, *PLAN, *flags]
+            ["--model", "rule", "--rethink", "off", "--episodes", "1", *CALCULATOR, *PLAN, *flags]
         )
         with (
             tempfile.TemporaryDirectory() as tmp,

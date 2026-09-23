@@ -26,7 +26,7 @@ def clickable(element: Element) -> bool:
 class WindowEnv:
     """The mechanics: bind to the app's window, offer its clickable elements, click one, re-read the window.
 
-    ``goal`` rides in every observation for the model in the slot. ``done_when`` reads a snapshot and says whether the task is finished; it is also the score. Without ``execute``
+    ``goal`` rides in every observation for the model. ``done_when`` reads a snapshot and says whether the task is finished; it is also the score. Without ``execute``
     the first chosen click is recorded as ``planned`` and the episode ends, so a dry run shows one decision and acts on
     nothing. ``clear_labels`` names a button pressed on ``reset`` when the window has one (a calculator's All Clear).
     """

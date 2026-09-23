@@ -1,4 +1,4 @@
-# The decision-model layer: one interface between every front and the model in the slot
+# The decision-model layer: one interface between every front and the decision model
 
 Code: `s1a/decision_models/`. Tests: `tests/test_decision_models_*.py`, the shared contract in
 `tests/decision_model_contract.py`. The wire itself (the async HTTP client, the `typesafe` and `openrouter` backends)
@@ -7,10 +7,10 @@ stays in `s1a/decision_models/wire.py` and reads no answer.
 Every front that asks "which one" (the tool loop, the browser policy, the rails, `decide`, `probe`, the MCP server)
 talks only to `DecisionModel`; the wire client is private to `s1a/decision_models/`. A decision model is a classifier over options the caller enumerates. It
 reads a state and returns a distribution over the offered keys. Hugging Face writes "System 1 decision model" and
-TypeSafe "System One model". This repository uses the terms interchangeably. The backend is a slot: `jev` (TypeSafe Jev over HTTP),
+TypeSafe "System One model". This repository uses the terms interchangeably. `--model` picks the backend: `jev` (TypeSafe Jev over HTTP),
 `laya` (in process, behind `uv sync --extra laya`), `cua` (Cua-S1 Nano in process, behind `uv sync --extra cua`),
 `random` and `rule` (the tool front's baselines).
-`build_model(slot, seed=, rule=)` builds one from the environment; `llm` names the chat model, which `build_model` does not build.
+`build_model(model_name, seed=, rule=)` builds one from the environment; `llm` names the chat model, which `build_model` does not build.
 
 ## The interface
 
@@ -40,7 +40,7 @@ shorthands; `warm()` and `close()` open and release the backend.
 
 ## Backends
 
-| slot | class | `name` | notes |
+| `--model` | class | `name` | notes |
 |---|---|---|---|
 | `jev` | `JevModel(transport)` | `jev` | the request body every front sent before the layer existed, byte for byte; `from_env` picks TypeSafe or the OpenRouter proxy |
 | `laya` | `LayaModel(agent, model=)` | `laya` | one forward pass per call on a thread; `MODEL_SERVICE_CONFIG_ERROR` when `input_tokens` fills the window (Laya cuts the state silently; `LAYA_MAX_LEN`, `LAYA_HEAD_MAX_LEN` widen it); `ValueError` and `RuntimeError` from the library become `MODEL_CALL_FAILED` |
@@ -50,7 +50,7 @@ shorthands; `warm()` and `close()` open and release the backend.
 
 `name` lands in every tick's `source` and in `Episode.policy`; the eval table's columns take their labels from it.
 
-TypeSafe Jev fills the `jev` slot. One request holds a `state` and one or more questions over options the caller
+TypeSafe Jev answers `--model jev`. One request holds a `state` and one or more questions over options the caller
 enumerates; the answer holds one option per question, a probability per option and a confidence, from one forward
 pass, with no free text. Three heads: `choice` picks one key among the options, `noul` gives the probability that a
 statement holds, `score` places the state on an ordered rubric. Input is capped at 32K tokens; the endpoint is
@@ -83,8 +83,8 @@ real; `bodies` records every request). `ScriptedModel` fakes the interface for f
    `supports_images`, `question_types`, `deterministic`; implement `model` and `_decide`, which translates the
    questions and returns a `Reply` whose `answers` are the backend's own dicts; `decide_many` validates them into
    a `Decision`. Keep any heavy import inside `from_env()`.
-2. A `case` in `factory.build_model` and the slot name in `DECISION_MODEL_SLOTS`, `tool/loop.py::SLOTS`,
-   `browser/browse.py::BROWSER_SLOTS`, `rails.RAIL_SLOTS` and `cli.DECIDE_SLOTS`.
+2. A `case` in `factory.build_model` and the name in `DECISION_MODEL_NAMES`, `tool/loop.py::MODEL_NAMES`,
+   `browser/browse.py::BROWSER_MODEL_NAMES`, `rails.RAIL_MODEL_NAMES` and `cli.DECIDE_MODEL_NAMES`.
 3. `tests/test_decision_models_<backend>.py` with `Test<Backend>Contract(DecisionModelContract, IsolatedAsyncioTestCase)`
    plus the backend's mapping tests; a fake for its SDK lives in that file.
 4. An optional extra in `pyproject.toml` and an env block in `.env.example` when it needs a dependency.
@@ -92,4 +92,4 @@ real; `bodies` records every request). `ScriptedModel` fakes the interface for f
 Laya is text only and reads a 512 to 1024 token window; it fits the tool front first. The browser front's element
 tables are wider than that window. The window check sums `input_tokens` over the request's questions. On the
 browser front (two to four questions per tick) only a cut on every head raises the config error above; a cut on
-one head goes unseen. `--slot laya` on a browser agent needs `LAYA_MAX_LEN` raised to the page's size.
+one head goes unseen. `--model laya` on a browser agent needs `LAYA_MAX_LEN` raised to the page's size.

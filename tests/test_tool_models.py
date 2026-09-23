@@ -188,7 +188,7 @@ class TestToolDecisionModelOverJev(IsolatedAsyncioTestCase):
         self.assertEqual(chunks[0].finish_reason, "tool_calls")
 
 
-class TestOtherSlots(IsolatedAsyncioTestCase):
+class TestOtherModels(IsolatedAsyncioTestCase):
     async def test_random_picks_an_offered_key_with_a_uniform_distribution(self) -> None:
         state = EvalState()
         message = await _model(CountingEnv(), state, RandomModel(1)).invoke([], tools=TOOLS)

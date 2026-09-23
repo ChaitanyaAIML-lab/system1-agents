@@ -66,8 +66,8 @@ Everything outside `openjiuwen` is an extra. An agent whose extra is missing say
 | `alfworld` | alfworld, textworld | `s1a run alfworld`; also `ALFWORLD_DATA` and Python 3.11, see `evals/README.md` |
 | `alfworld-visual` | the `alfworld` extra, ai2thor 2.1.0, torch | `evals/replay/thor_replay.py`, the AI2-THOR scene behind an ALFWorld trial in the replay page; the 400 MB Unity build downloads on first use |
 | `report` | pillow, playwright | `python -m evals.replay`, the showcase pages and GIFs; `--gif` also needs `uv run playwright install chromium` |
-| `laya` | laya (torch, transformers) | `--slot laya` on every agent and on `decide` and `probe`: Laya in process, no Jev key; the checkpoint downloads into the Hugging Face cache (`HF_HOME`) on first use |
-| `cua` | cua-s1 (torch), huggingface-hub | `--slot cua` on tool and browser agents and on `decide` and `probe`: Cua-S1 Nano in process; the 3 MB checkpoint downloads into the Hugging Face cache (`HF_HOME`) on first use |
+| `laya` | laya (torch, transformers) | `--model laya` on every agent and on `decide` and `probe`: Laya in process, no Jev key; the checkpoint downloads into the Hugging Face cache (`HF_HOME`) on first use |
+| `cua` | cua-s1 (torch), huggingface-hub | `--model cua` on tool and browser agents and on `decide` and `probe`: Cua-S1 Nano in process; the 3 MB checkpoint downloads into the Hugging Face cache (`HF_HOME`) on first use |
 | `dev` | pytest, pytest-asyncio, ruff, ty | the test suite, `scripts/smoke.sh` and the lint and type checks |
 
 `uv sync --all-extras` installs all seven. The CLI runs from a checkout; a wheel install (`uv tool install`,
@@ -87,7 +87,7 @@ The `desktop` agent runs on Windows or macOS and has no extra. It needs Cua Driv
 
 `.env` needs a key for Jev (`TYPESAFE_API_KEY` direct, or `OPENROUTER_API_KEY` for the proxy) and for the chat
 model (`OPENAI_API_KEY` or `LLM_API_KEY`, `MODEL_NAME`; `OPENROUTER_API_KEY` and `OPENROUTER_BASE_URL` stand in
-for `LLM_*` when those are unset). Exported variables win over the file. `--slot laya` and `--slot cua` need no
+for `LLM_*` when those are unset). Exported variables win over the file. `--model laya` and `--model cua` need no
 decision key. A host agent (Claude Code, Codex, Cursor, Hermes) reaches the keys through its own environment or
 the checkout's `.env`.
 

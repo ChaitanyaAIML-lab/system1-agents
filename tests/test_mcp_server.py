@@ -28,7 +28,7 @@ from s1a.decision_models import JevModel, ScriptedTransport
 from s1a.tool import loop, series
 from support import COUNTER
 
-RANDOM_RUN = ["--slot", "random", "--rethink", "off", "--episodes", "1", "--showcase"]
+RANDOM_RUN = ["--model", "random", "--rethink", "off", "--episodes", "1", "--showcase"]
 NO_KEYS = {"TYPESAFE_API_KEY": "", "OPENROUTER_API_KEY": "", "MODEL_NAME": "", "OPENAI_API_KEY": "", "LLM_API_KEY": ""}
 HAVE_RLCARD = importlib.util.find_spec("rlcard") is not None  # the one tool agent that runs offline
 HARNESS_LOG = re.compile(r"^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} \| ")  # the console entry routes these to files
@@ -104,7 +104,7 @@ class TestStdioTransport(IsolatedAsyncioTestCase):
     async def test_a_blackjack_run_leaves_the_stream_clean_and_writes_under_s1a_home(self) -> None:
         async with self._session() as session:
             run = await session.call_tool(
-                "run_agent", {"name": "blackjack", "flags": ["--slot", "rule", *RANDOM_RUN[2:]]}
+                "run_agent", {"name": "blackjack", "flags": ["--model", "rule", *RANDOM_RUN[2:]]}
             )
         self.assertEqual(self.strays, [])
         self.assertFalse(run.isError, run.content[0].text if run.content else run)
@@ -136,7 +136,7 @@ class TestMcpServer(IsolatedAsyncioTestCase):
 
     async def test_decide_returns_the_validated_choice(self) -> None:
         transport = ScriptedTransport(choose="inc")
-        with patch.object(mcp_server, "build_model", lambda slot, **kwargs: JevModel(transport)):
+        with patch.object(mcp_server, "build_model", lambda model_name, **kwargs: JevModel(transport)):
             async with create_connected_server_and_client_session(mcp_server.server) as session:
                 result = await session.call_tool(
                     "decide", {"state": {"n": 1}, "options": {"inc": "add one", "noop": "do nothing"}, "rules": "count"}
@@ -159,7 +159,7 @@ class TestMcpServer(IsolatedAsyncioTestCase):
                 self.assertIn(f"uv sync --extra {name}", rows[name]["description"])
         flags = {name: {row["flag"]: row for row in rows[name]["flags"]} for name in ("game2048", "flights")}
         self.assertEqual(
-            (flags["game2048"]["--slot"]["required"], flags["game2048"]["--slot"]["choices"]),
+            (flags["game2048"]["--model"]["required"], flags["game2048"]["--model"]["choices"]),
             (True, ["jev", "llm", "random", "rule", "laya", "cua"]),
         )
         max_steps = str(agents.load("game2048").budget.max_steps)
@@ -168,7 +168,7 @@ class TestMcpServer(IsolatedAsyncioTestCase):
             (False, max_steps),
         )
         self.assertEqual(
-            (flags["game2048"]["--slot"]["takes_value"], flags["game2048"]["--headed"]["takes_value"]), (True, False)
+            (flags["game2048"]["--model"]["takes_value"], flags["game2048"]["--headed"]["takes_value"]), (True, False)
         )
         self.assertIsNone(flags["game2048"]["--headed"]["default"])  # a switch is passed alone: no value to send
         self.assertEqual(

@@ -1,5 +1,5 @@
 # coding: utf-8
-"""Slot name to decision_model, from the environment: ``build_model`` is the door every front uses."""
+"""Model name to decision_model, from the environment: ``build_model`` is the door every front uses."""
 
 from __future__ import annotations
 
@@ -13,7 +13,7 @@ from openjiuwen.core.common.exception.codes import StatusCode
 from openjiuwen.core.common.exception.errors import BaseError
 
 from s1a.decision_models import (
-    DECISION_MODEL_SLOTS,
+    DECISION_MODEL_NAMES,
     JevModel,
     LayaModel,
     RandomModel,
@@ -25,7 +25,7 @@ KEYS = {"TYPESAFE_API_KEY": "k", "TYPESAFE_API_URL": "", "OPENROUTER_API_KEY": "
 
 
 class TestBuildModel(TestCase):
-    def test_every_slot_builds_its_class(self) -> None:
+    def test_every_name_builds_its_class(self) -> None:
         with patch.dict(os.environ, KEYS):
             self.assertIsInstance(build_model("jev"), JevModel)
         fake_laya = SimpleNamespace(
@@ -37,17 +37,17 @@ class TestBuildModel(TestCase):
         rule = build_model("rule", rule=("always-inc", lambda state, options: "inc"))
         self.assertIsInstance(rule, RuleModel)
         self.assertEqual(rule.name, "always-inc")
-        self.assertEqual(DECISION_MODEL_SLOTS, ("jev", "laya", "cua", "random", "rule"))
+        self.assertEqual(DECISION_MODEL_NAMES, ("jev", "laya", "cua", "random", "rule"))
 
     def test_the_errors(self) -> None:
         with self.assertRaises(RuntimeError):
             build_model("rule")
         with self.assertRaises(ValueError):
             build_model("llm")
-        for slot, module in (("laya", "laya"), ("cua", "cua_s1.nano")):
+        for model_name, module in (("laya", "laya"), ("cua", "cua_s1.nano")):
             with patch.dict(sys.modules, {module: None}):
                 with self.assertRaises(BaseError) as caught:
-                    build_model(slot)
+                    build_model(model_name)
             self.assertEqual(caught.exception.status, StatusCode.MODEL_SERVICE_CONFIG_ERROR)
         with patch.dict(os.environ, {"TYPESAFE_API_KEY": "", "OPENROUTER_API_KEY": ""}):
             with self.assertRaises(BaseError):

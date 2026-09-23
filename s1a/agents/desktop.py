@@ -4,13 +4,13 @@
 The Calculator example::
 
     s1a run desktop --app Calculator --goal "compute 12 times 7" --expect 84 --execute \\
-        --plan "1,2,Multiply|×,7,Equals|=" --clear "All Clear" --slot jev --rethink off --episodes 1
+        --plan "1,2,Multiply|×,7,Equals|=" --clear "All Clear" --model jev --rethink off --episodes 1
 
 On Windows use ``--app "Windows Calculator" --expect "Display is 84"`` and match the UIA button labels with
 ``--plan "One,Two,Multiply by,Seven,Equals" --clear Clear``. Result text is matched exactly, in the app's language.
 
 Without ``--execute`` the run is a dry run: one decision, recorded as ``planned``, nothing clicked. ``--plan`` is the
-rule baseline (``--slot rule``): button labels in order, ``|`` between variants of one label. Needs ``cua-driver`` on
+rule baseline (``--model rule``): button labels in order, ``|`` between variants of one label. Needs ``cua-driver`` on
 PATH; macOS also needs Accessibility and Screen Recording granted.
 """
 
@@ -98,9 +98,7 @@ def make_series(flags: argparse.Namespace) -> Series:
 
 def flags(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--app", required=True, help="app name (Windows Calculator / Calculator), or a Windows AUMID")
-    parser.add_argument(
-        "--goal", required=True, help="what to do in the window, read by the model in the slot on every turn"
-    )
+    parser.add_argument("--goal", required=True, help="what to do in the window, read by the model on every turn")
     parser.add_argument("--expect", required=True, help="the text a display or label shows when the goal is met")
     parser.add_argument("--execute", action="store_true", help="click for real; without it one decision is planned")
     parser.add_argument("--plan", default="", help="the rule baseline: button labels in order, | between variants")

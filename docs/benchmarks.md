@@ -1,7 +1,7 @@
 # Benchmarks: Jev against the chat model in the same agent
 
 Every number here compares a System 1 decision model against a chat model in the same agent, on the same tools and
-the same seeds. The model in the slot is the only difference between the two columns.
+the same seeds. The model is the only difference between the two columns.
 
 ## Six agents, one episode each
 
@@ -27,14 +27,14 @@ that shows the expected result. The browser row is in the next section.
 The `allrecipes` agent runs the first Allrecipes task of the [WebVoyager](https://github.com/MinorJerry/WebVoyager)
 task set verbatim (`Allrecipes--0` in `data/WebVoyager_data.jsonl`; [He et al., 2024](https://arxiv.org/abs/2401.13919);
 Apache License 2.0, attribution in `NOTICE`): a vegetarian lasagna with more than 100 reviews, a rating of at least
-4.5 stars, suitable for 6 people, answered in text. Both slots ran headed on
+4.5 stars, suitable for 6 people, answered in text. Both models ran headed on
 2026-09-22 (the site answers a headless Chromium with a bot wall) on the Playwright MCP without its settle sleeps,
 with a frame after every browser call from the run's own MCP session: `scripts/browser_showcase.sh allrecipes 2`.
 The chat model on both sides is Claude Fable 5.1 through OpenRouter, at $10 per million input tokens, $50 per
 million output tokens and $0.25 per million cached input tokens; Jev's decisions go to TypeSafe at $0.042 per
-million input tokens. The Jev slot pays the chat model for one typed value, the search text, and for the answer.
+million input tokens. The Jev run pays the chat model for one typed value, the search text, and for the answer.
 
-| run | slot | wall s | decisions | chat calls | chat tokens in / cached / out | Jev tokens | cost | answer |
+| run | model | wall s | decisions | chat calls | chat tokens in / cached / out | Jev tokens | cost | answer |
 |---|---|---|---|---|---|---|---|---|
 | 0 | jev | 35.7 | 5 | 4 | 7,946 / 1,210 / 454 | 23,654 | $0.0914 | Easy Vegetarian Spinach Lasagna: 4.6 stars, 117 ratings, serves 6 |
 | 1 | jev | 40.4 | 4 | 4 | 7,335 / 0 / 440 | 18,785 | $0.0961 | the same recipe |
@@ -46,7 +46,7 @@ million input tokens. The Jev slot pays the chat model for one typed value, the 
 Every answer meets the task's three conditions, checked by hand on the recipe page: 4.6 stars, 117 ratings (85 of
 them written reviews; the WebVoyager judge of the September 19 batch accepted the ratings count as reviews),
 6 servings. The README row and the replay are Jev's run 0 against the chat model's run 2, the median run of each
-slot by wall clock; the chat model's cost is 16.4 times Jev's. The records of those two runs are under `results/allrecipes/`.
+model by wall clock; the chat model's cost is 16.4 times Jev's. The records of those two runs are under `results/allrecipes/`.
 
 Two more pairs ran the same afternoon without records in that folder. The first, before the probe dropped escaped
 markup from control labels: Jev answered in 31.9 s of process time for $0.102 with the same recipe, after two clicks
@@ -56,7 +56,7 @@ overwrote: Jev 40.3 s, 5 decisions and $0.096; the chat model 104.9 s, 8 decisio
 lasagna.
 
 `wall s` is the task's own clock, written to `answer.json`: the browser's start, the navigation, every decision and
-the final answer. Of the Jev slot's cost, the decisions themselves are a tenth of a cent; the rest is the chat
+the final answer. Of the Jev run's cost, the decisions themselves are a tenth of a cent; the rest is the chat
 model's typed value and answer. Jev's run 2 cost a fifth of run 1 because it read 7,295 of its 7,335 prompt tokens
 from the cache. The frames add one screenshot per browser call on both sides. Each run begins with a
 chat-model call by the harness that probes the model's image support. OpenRouter refuses that call for this model and
@@ -69,7 +69,7 @@ the harness continues without it. Both sides pay it.
 Over 150 moves of 2048 the cost gap widens with the transcript. Seed 0: Jev scored 1,104 in 244 s for $0.003; the
 chat model scored 1,188 in 363 s for $0.31.
 
-![2048, seed 0, 150 moves. Left: Jev in the slot. Right: the chat model in the same slot.](results/2048/showcase/replay.gif)
+![2048, seed 0, 150 moves. Left: Jev. Right: the chat model.](results/2048/showcase/replay.gif)
 
 The same showcase on ALFWorld, Blackjack and Millionaire is under `results/<eval>/showcase/replay.gif`, written by
 `scripts/showcase.sh`.
@@ -83,7 +83,7 @@ The rail scores 20 of 20 on its labelled set at a median of 464 ms (`s1a run inj
 The protocol in `evals/README.md` quotes nothing under ten episodes and asks for 500 Blackjack hands. The series of
 2026-09-19, from job folders on the author's machine; the chat model of the `llm` rows is not recorded in them:
 
-| eval | slot | N | score, 95 % CI | s per episode | steps | $ per episode |
+| eval | model | N | score, 95 % CI | s per episode | steps | $ per episode |
 |---|---|---|---|---|---|---|
 | Blackjack | jev | 100 | -0.06 [-0.25, 0.13] | 0.6 | 1.5 | 0.0000 |
 | Blackjack | llm | 100 | -0.06 [-0.25, 0.13] | 3.0 | 1.5 | 0.0006 |
@@ -93,9 +93,9 @@ The protocol in `evals/README.md` quotes nothing under ten episodes and asks for
 | ALFWorld text | oracle plan | 12 | 0.917 [0.75, 1.00] | 0.4 | 19.3 | 0 |
 | 2048 | jev | 5 | 1115 [924, 1238] | 168.9 | 146.6 | 0.0032 |
 
-On Blackjack the three slots play the identical basic strategy over 100 hands. Jev takes a fifth of the chat
+On Blackjack the three models play the identical basic strategy over 100 hands. Jev takes a fifth of the chat
 model's time per hand. On ALFWorld the chat model wins two more games of twelve. It spends 16 times the dollars.
-`uv run python -m evals.table evals/results` prints this table for any run. The `laya` and `cua` slots have no
+`uv run python -m evals.table evals/results` prints this table for any run. `laya` and `cua` have no
 numbers yet.
 
 ## Google Flights: four drivers on one clock
@@ -110,7 +110,7 @@ Goal for every arm: open Google Flights, find one-way flights from Zurich to Lon
 - **C', S1A on Playwright without the settle sleeps**: arm C with one change in the MCP server: `waitForCompletion` no longer sleeps 500 ms before and after waiting for in-flight requests. `scripts/pw_mcp_nosettle.sh` prepares that copy; it is a patched npm package.
 - **C'', S1A on Playwright, no settle sleeps, batched actions**: arm C' with `--batch on`: each step is one `browser_run_code_unsafe` call that performs the action and returns the next probe, one transport round trip per step where C' uses two. The runtime's target validation is skipped on that path; the batched code re-stamps and re-finds the target by role and label when a re-render dropped the stamp.
 
-Per run, S1A arms record the profiler JSON (`s1a run flights --slot jev --batch on --profile-out run.json`); arm A records jev-ultrafast's `state.json`. `scripts/summarize_runs.py` prints the table from those files. The S1A records live under `docs/results/flights/`. The arm A records stay out of the tree because each holds a page screenshot. The shipped `flights` agent computes its date as the first Sunday at least 28 days after the run day; the runs below used September 20, 2026. The records' `visible_flights` and screenshots show prices in yen because the runs were made from Japan; Google picks the currency from the run's location.
+Per run, S1A arms record the profiler JSON (`s1a run flights --model jev --batch on --profile-out run.json`); arm A records jev-ultrafast's `state.json`. `scripts/summarize_runs.py` prints the table from those files. The S1A records live under `docs/results/flights/`. The arm A records stay out of the tree because each holds a page screenshot. The shipped `flights` agent computes its date as the first Sunday at least 28 days after the run day; the runs below used September 20, 2026. The records' `visible_flights` and screenshots show prices in yen because the runs were made from Japan; Google picks the currency from the run's location.
 
 ### Results
 
@@ -231,7 +231,7 @@ cp -R "$CACHE" /tmp/pw-mcp-nosettle
 # In /tmp/pw-mcp-nosettle/node_modules/playwright-core/lib/coreBundle.js, delete the two
 # `await tab2.waitForTimeout(500);` lines inside `async function waitForCompletion`.
 PLAYWRIGHT_MCP_COMMAND=node PLAYWRIGHT_MCP_ARGS=/tmp/pw-mcp-nosettle/node_modules/@playwright/mcp/cli.js \
-  s1a run flights --slot jev --batch off --profile-out run.json   # TYPESAFE_API_KEY unset: the OpenRouter proxy
+  s1a run flights --model jev --batch off --profile-out run.json   # TYPESAFE_API_KEY unset: the OpenRouter proxy
 ```
 
 ### Six arms, one table

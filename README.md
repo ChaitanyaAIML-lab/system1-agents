@@ -31,7 +31,7 @@
 † The first Allrecipes task of the [WebVoyager](https://github.com/MinorJerry/WebVoyager) task set
 ([He et al., 2024](https://arxiv.org/abs/2401.13919), Apache-2.0, attribution in [NOTICE](NOTICE)): a vegetarian
 lasagna with over 100 reviews, 4.5 stars or more, for 6. The chat model of that row is Claude Fable 5.1 through
-OpenRouter; both slots pay it for the typed search text and the answer. \* Estimated; the chat-model run recorded no
+OpenRouter; both models pay it for the typed search text and the answer. \* Estimated; the chat-model run recorded no
 cost. Each replay below is the episode behind its row, Jev on the left and the chat model on the right, both on the
 wall clock. The other Allrecipes runs, longer games and the Google Flights driver comparison:
 [docs/benchmarks.md](docs/benchmarks.md).
@@ -82,18 +82,18 @@ uv sync && cp .env.example .env     # the first sync resolves the openjiuwen pin
 ```
 
 Put a Jev key in `.env` (`TYPESAFE_API_KEY` from the [TypeSafe console](https://console.typesafe.ai), or
-`OPENROUTER_API_KEY`), then ask for one decision and run one agent on both slots:
+`OPENROUTER_API_KEY`), then ask for one decision and run one agent with each model:
 
 ```bash
 uv run s1a decide --state '{"player_total": 18, "dealer_upcard": 9}' \
   --option hit="take a card" --option stand="keep the hand" --rules "stand on 17 or more"
 uv sync --extra blackjack
-uv run s1a run blackjack --slot jev --rethink off --episodes 20
-uv run s1a run blackjack --slot llm --rethink off --episodes 20     # the chat model in the same slot
+uv run s1a run blackjack --model jev --rethink off --episodes 20
+uv run s1a run blackjack --model llm --rethink off --episodes 20     # the chat model in the same agent
 ```
 
 `decide` prints one JSON object with `choice`, a probability per option, `confidence` and `ms`; `run` writes a job
-folder with the score. Without a key, `--slot cua` answers in process after `uv sync --extra cua`.
+folder with the score. Without a key, `--model cua` answers in process after `uv sync --extra cua`.
 
 ### As an MCP server
 
@@ -138,7 +138,7 @@ interface fits: [docs/architecture.md](docs/architecture.md), [docs/decision-mod
 - [docs/benchmarks.md](docs/benchmarks.md): the six runs above, the Google Flights driver comparison, a longer game, the guard rail.
 - [docs/skills.md](docs/skills.md): the caller skill, the builder skill, what to delegate.
 - [docs/agents.md](docs/agents.md): every agent with its flags, run command and extra.
-- [docs/architecture.md](docs/architecture.md) and [docs/decision-models.md](docs/decision-models.md): the fronts, the slot, the model interface, adding a backend.
+- [docs/architecture.md](docs/architecture.md) and [docs/decision-models.md](docs/decision-models.md): the fronts, the model slot, the model interface, adding a backend.
 - [docs/browser-front.md](docs/browser-front.md): the browser policy, decision by decision.
 - [docs/why.md](docs/why.md): the problem, the philosophy, the precedents.
 - [docs/roadmap.md](docs/roadmap.md) and [CHANGELOG.md](CHANGELOG.md).

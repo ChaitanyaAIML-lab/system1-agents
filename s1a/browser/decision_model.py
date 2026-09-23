@@ -9,7 +9,7 @@ On a browser turn (the tool list contains ``browser_click``) it settles and prob
 the bound ``BrowserAgentRuntime``, asks the model (every head of the action space in one ``decide_many``,
 re-asked once on an unusable answer), and returns exactly one ``browser_*`` tool call. Every other call
 (summaries, value generation) goes to the wrapped chat model. Jev over HTTP and Laya in process fill the
-slot alike.
+model_name alike.
 """
 
 from __future__ import annotations
@@ -138,7 +138,7 @@ class BrowserDecisionModel(Model):
         sends each action and the next probe as one ``browser_run_code_unsafe`` call when that tool is
         offered, skipping the runtime's target validation and one transport round trip per step.
         ``value_model`` answers the typed-value calls when given; the fallback chat model otherwise.
-        ``decision_model`` decides every browser step; its ``name`` (``jev``, ``laya``) is the slot."""
+        ``decision_model`` decides every browser step; its ``name`` (``jev``, ``laya``) is the ``--model`` value."""
         super().__init__(fallback.model_client_config, fallback.model_config)
         self._spec = spec
         self._fallback = fallback

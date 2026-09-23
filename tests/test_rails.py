@@ -249,12 +249,12 @@ class TestEvaluate(IsolatedAsyncioTestCase):
 
 
 class TestPlay(IsolatedAsyncioTestCase):
-    def test_the_slot_flag_defaults_to_jev_and_offers_laya(self) -> None:
+    def test_the_model_flag_defaults_to_jev_and_offers_laya(self) -> None:
         args = rails.parser(GUARD).parse_args([])
-        self.assertEqual((args.slot, args.labelled_set), ("jev", GUARD.labelled_set))
-        self.assertEqual(rails.parser(GUARD).parse_args(["--slot", "laya"]).slot, "laya")
+        self.assertEqual((args.model, args.labelled_set), ("jev", GUARD.labelled_set))
+        self.assertEqual(rails.parser(GUARD).parse_args(["--model", "laya"]).model, "laya")
         with self.assertRaises(SystemExit):
-            rails.parser(GUARD).parse_args(["--slot", "random"])
+            rails.parser(GUARD).parse_args(["--model", "random"])
 
     async def test_play_warms_evaluates_and_closes_the_slot_model(self) -> None:
         events: list[str] = []
@@ -268,11 +268,11 @@ class TestPlay(IsolatedAsyncioTestCase):
 
         built: list[str] = []
 
-        def build(slot: str, **kwargs: Any) -> ScriptedModel:
-            built.append(slot)
+        def build(model_name: str, **kwargs: Any) -> ScriptedModel:
+            built.append(model_name)
             return Recording(noul=[0.9] * 20)
 
         with tempfile.TemporaryDirectory() as tmp, patch.object(rails, "build_model", build):
-            args = rails.parser(GUARD).parse_args(["--slot", "laya"])
+            args = rails.parser(GUARD).parse_args(["--model", "laya"])
             summary = await rails.play(GUARD, args, results_dir=Path(tmp))
         self.assertEqual((built, events, summary["records"]), (["laya"], ["warm", "close"], 20))
