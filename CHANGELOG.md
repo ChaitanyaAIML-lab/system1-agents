@@ -2,6 +2,14 @@
 
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow semver.
 
+## Unreleased
+
+### Changed
+
+- `--model` picks the model on every agent, on `decide` and on `probe`: `jev`, `laya`, `cua`, `llm`, `random` or
+  `rule`. The results table's column, the replay page's badge data and a browser run's `answer.json` name it
+  `model` as well; the replay still reads the `slot` key of records written by 0.1.0.
+
 ## 0.1.0 - 2026-09-23
 
 ### Added

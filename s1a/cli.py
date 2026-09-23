@@ -19,7 +19,7 @@ from s1a import run as agents
 from s1a.run import started_runner
 from s1a.spec import Json
 
-DECIDE_SLOTS = (
+DECIDE_MODEL_NAMES = (
     "jev",
     "laya",
     "cua",
@@ -45,7 +45,7 @@ def parser() -> argparse.ArgumentParser:
     )
     decide.add_argument("--rules", required=True, help="the facts the model applies when it picks")
     decide.add_argument(
-        "--slot", choices=DECIDE_SLOTS, default="jev", help="who answers: jev, or laya and cua in process"
+        "--model", choices=DECIDE_MODEL_NAMES, default="jev", help="who answers: jev, or laya and cua in process"
     )
     fit = commands.add_parser("probe", help="the fit probe: hand-written choice cases from a JSONL file")
     fit.add_argument(
@@ -53,7 +53,9 @@ def parser() -> argparse.ArgumentParser:
         type=Path,
         help="JSONL, one case per line: state (object), options (key to text), rules, accept (list of right keys), note",
     )
-    fit.add_argument("--slot", choices=DECIDE_SLOTS, default="jev", help="who answers: jev, or laya and cua in process")
+    fit.add_argument(
+        "--model", choices=DECIDE_MODEL_NAMES, default="jev", help="who answers: jev, or laya and cua in process"
+    )
     return build
 
 
@@ -87,9 +89,9 @@ async def run_agent(name: str, flags: list[str]) -> Json:
 
 
 async def decide(args: argparse.Namespace) -> dict[str, Any]:
-    """One question through the slot's model; prints ``{"choice", "probabilities", "confidence", "ms"}``."""
+    """One question through the model ``--model`` names; prints ``{"choice", "probabilities", "confidence", "ms"}``."""
     state, options = parse_state(args.state), parse_options(args.option)  # bad input is reported before any key check
-    decision_model = build_model(args.slot)
+    decision_model = build_model(args.model)
     try:
         answer = await probe.pick(decision_model, state=state, options=options, rules=args.rules)
     finally:
@@ -98,9 +100,9 @@ async def decide(args: argparse.Namespace) -> dict[str, Any]:
     return answer
 
 
-async def run_probe(cases: Path, slot: str) -> dict[str, Any]:
+async def run_probe(cases: Path, model_name: str) -> dict[str, Any]:
     read = probe.read_cases(cases)
-    decision_model = build_model(slot)
+    decision_model = build_model(model_name)
     try:
         summary = await probe.run(read, decision_model)
     finally:
@@ -125,7 +127,7 @@ def main(argv: list[str]) -> int:
             case "decide":
                 asyncio.run(decide(args))
             case "probe":
-                return 0 if asyncio.run(run_probe(args.cases, args.slot))["verdict"] == "fits" else 1
+                return 0 if asyncio.run(run_probe(args.cases, args.model))["verdict"] == "fits" else 1
     except (agents.UnknownAgent, ValueError) as exc:  # JSONDecodeError is a ValueError
         print(exc, file=sys.stderr)
         return 2

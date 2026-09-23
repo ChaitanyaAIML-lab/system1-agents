@@ -1,5 +1,5 @@
 # coding: utf-8
-"""The model in the eval loop's slot: each turn is one ``act(key)`` tool call chosen by the model behind it.
+"""The model in the eval loop's model slot: each turn is one ``act(key)`` tool call chosen by the model behind it.
 
 jiuwen's DeepAgent calls ``invoke`` or ``stream`` with the turn's tool list. A turn whose tools include ``act``
 is a decision turn: the model reads the environment directly and answers with exactly one ``act`` call. Any
@@ -25,13 +25,13 @@ OBSERVE_TOOL = "observe"
 
 
 def placeholder_model() -> Model:
-    """A config the harness accepts for a slot that never makes a chat call (``Model`` refuses a missing one)."""
+    """A config the harness accepts for a model that never makes a chat call (``Model`` refuses a missing one)."""
     return init_model(provider="openai", model_name="none", api_key="unused", api_base="https://api.openai.com/v1")
 
 
 @dataclass
 class EvalState:
-    """Per-episode facts shared by the model in the slot, the ``act`` tool and the rethink rail."""
+    """Per-episode facts shared by the slot model, the ``act`` tool and the rethink rail."""
 
     plan: str = ""
     notices: list[str] = field(default_factory=list)

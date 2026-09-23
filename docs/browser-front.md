@@ -21,8 +21,8 @@ browser-use/jev-ultrafast (MIT), whose observe-decide-act tick this policy follo
 1. A decision model fills the `Model` slot. `BrowserDecisionModel(Model)` answers a browser turn (the tool list holds
    `browser_click`) with exactly one `browser_*` tool call and forwards every other turn (summaries, typed
    values) to the wrapped chat model. DeepAgent, rails, checkpoints and the permission engine are untouched.
-   The model behind it is a `DecisionModel`: TypeSafe Jev over HTTP with `--slot jev`, Laya in
-   process with `--slot laya`; the policy is the same. `action_space.py` builds the `Observation` and the
+   The model behind it is a `DecisionModel`: TypeSafe Jev over HTTP with `--model jev`, Laya in
+   process with `--model laya`; the policy is the same. `action_space.py` builds the `Observation` and the
    typed questions of a tick (`build_observation`, `build_questions`) and reads the answer back onto a
    candidate (`interpret`).
 2. The policy has its own in-page probe. `probe_js.py` waits for the page to settle and describes every

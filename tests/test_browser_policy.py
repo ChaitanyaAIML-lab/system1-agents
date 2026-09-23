@@ -456,7 +456,7 @@ class TestBrowserDecisionModel(IsolatedAsyncioTestCase):
         message = await slot_model.invoke(_MESSAGES, tools=_TOOLS)
 
         self.assertEqual(message.tool_calls[0].name, "browser_click")
-        self.assertTrue(message.tool_calls[0].id.startswith("scripted-"), "the call id names the slot, not Jev")
+        self.assertTrue(message.tool_calls[0].id.startswith("scripted-"), "the call id names the slot model, not Jev")
         ((observation, questions),) = decision_model.calls
         self.assertEqual(sorted(questions), ["click_target", "operation", "select_target", "type_text_target"])
         self.assertEqual(observation.state["page"]["title"], "Flights")

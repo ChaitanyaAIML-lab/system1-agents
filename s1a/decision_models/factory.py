@@ -1,5 +1,5 @@
 # coding: utf-8
-"""a decision model by slot name, from the environment."""
+"""A decision model by name, from the environment."""
 
 from __future__ import annotations
 
@@ -9,18 +9,18 @@ from s1a.decision_models.cua import CuaS1Model
 from s1a.decision_models.jev import JevModel
 from s1a.decision_models.laya import LayaModel
 
-DECISION_MODEL_SLOTS = (
+DECISION_MODEL_NAMES = (
     "jev",
     "laya",
     "cua",
     "random",
     "rule",
-)  # the slots a decision model fills; ``llm`` is not a decision model
+)  # the names that build a decision model; ``llm`` is not one
 
 
-def build_model(slot: str, *, seed: int = 0, rule: tuple[str, Rule] | None = None) -> DecisionModel:
+def build_model(model_name: str, *, seed: int = 0, rule: tuple[str, Rule] | None = None) -> DecisionModel:
     """``jev``, ``laya`` and ``cua`` from the environment, ``random`` from the seed, ``rule`` from the agent's baseline."""
-    match slot:
+    match model_name:
         case "jev":
             return JevModel.from_env()
         case "laya":
@@ -34,4 +34,4 @@ def build_model(slot: str, *, seed: int = 0, rule: tuple[str, Rule] | None = Non
                 raise RuntimeError("this agent has no rule baseline")
             return RuleModel(*rule)
         case _:
-            raise ValueError(f"unknown decision-model slot {slot!r}; one of {DECISION_MODEL_SLOTS}")
+            raise ValueError(f"unknown decision model {model_name!r}; one of {DECISION_MODEL_NAMES}")

@@ -94,7 +94,7 @@ class LayaModel(DecisionModel):
         except ImportError as exc:
             raise build_error(
                 StatusCode.MODEL_SERVICE_CONFIG_ERROR,
-                error_msg="the laya slot needs the laya extra: uv sync --extra laya",
+                error_msg="--model laya needs the laya extra: uv sync --extra laya",
             ) from exc
         model = os.getenv("LAYA_MODEL") or LAYA_DEFAULT_MODEL
         subfolder = os.getenv("LAYA_SUBFOLDER") or None
@@ -108,7 +108,7 @@ class LayaModel(DecisionModel):
                 StatusCode.MODEL_SERVICE_CONFIG_ERROR,
                 error_msg=(
                     f"laya {version} loaded an agent without a callable system_one(state, questions); "
-                    "the s1a laya slot needs that method"
+                    "the s1a laya model needs that method"
                 ),
             )
         for key, variable in (("max_len", "LAYA_MAX_LEN"), ("head_max_len", "LAYA_HEAD_MAX_LEN")):
