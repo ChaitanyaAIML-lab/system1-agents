@@ -52,14 +52,10 @@ the score statistics over the `scored` episodes only, and `evals.table` skips tr
 ## Setup
 
 `uv sync`, plus `--extra blackjack` and `--extra alfworld` for those games (the README lists every extra), then
-a `.env` with `TYPESAFE_API_KEY` or `OPENROUTER_API_KEY` for Jev.
-`llm`, the rethink planner and the browser agent need the chat model: `OPENAI_API_KEY` (or `LLM_API_KEY`),
-`OPENAI_BASE_URL` (or `LLM_BASE_URL`) and `MODEL_NAME`. `MODEL_PROVIDER=anthropic` talks Anthropic's own protocol, direct
-(`OPENAI_BASE_URL=https://api.anthropic.com`, `MODEL_NAME=claude-fable-5-1`; an org-level key also needs
-`ANTHROPIC_WORKSPACE_ID`) or through OpenRouter's `/v1/messages` (`MODEL_NAME=anthropic/claude-fable-5.1`). The browser agents launch a headless
-Chromium through `@playwright/mcp` (Node); `--headed` shows it. ALFWorld needs `uv sync --extra alfworld` and
-`ALFWORLD_DATA` in a Python 3.11 environment; the data comes from `python scripts/alfworld-download` in a clone
-of alfworld/alfworld. The DeepAgent's workspace files land under `runs/evals/`.
+a `.env` with `TYPESAFE_API_KEY` (or `OPENROUTER_API_KEY`) for Jev, and `MODEL_NAME` with provider credentials for the chat model.
+ALFWorld needs `uv sync --extra alfworld` and `ALFWORLD_DATA` in a Python 3.11 environment; the data comes from
+`python scripts/alfworld-download` in a clone of alfworld/alfworld. The DeepAgent's workspace files land under `runs/evals/`.
+For the complete reference table of all environment variables, provider endpoints, and defaults, see [docs/configuration.md](../docs/configuration.md).
 
 ## Protocol
 
@@ -71,8 +67,7 @@ seeds (same loop, swap the brain); `jev` with `--rethink on` against `off`; the 
 act against a bare loop (loop overhead); and, later, Jev's top probability against the ALFWorld expert plan.
 `summary.json` also holds decisions, chat calls, tokens (`chat_input_tokens`, `chat_output_tokens`,
 `chat_cache_tokens`) and `cost_usd` (Jev at $0.042 per M input tokens; the chat model at OpenRouter's catalogue
-price for `MODEL_NAME`, with cached input at the catalogue's cache-read rate; or `CHAT_USD_PER_M_INPUT`,
-`CHAT_USD_PER_M_OUTPUT` and, optionally, `CHAT_USD_PER_M_CACHED_INPUT`). `python -m evals.table evals/results` prints one row per eval and model over every
+price for `MODEL_NAME`, or custom rates from `CHAT_USD_PER_M_*`, see [docs/configuration.md](../docs/configuration.md)). `python -m evals.table evals/results` prints one row per eval and model over every
 job folder. ALFWorld's game files sort by task type; `--stride 11` from offset 0 takes twelve games across
 the six types. Every model plays the same tile draws because 2048 seeds the page's `Math.random`.
 

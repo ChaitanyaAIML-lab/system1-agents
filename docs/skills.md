@@ -14,7 +14,7 @@ claude plugin marketplace add ThinkFlowLab/system1-agents && claude plugin insta
 The plugin's MCP server starts as `uv run --project <plugin root> s1a-mcp`, with `uv` on `PATH`; the first start runs
 `uv sync` in the plugin folder and takes minutes to resolve the `openjiuwen` git pin. Export `TYPESAFE_API_KEY` (or
 `OPENROUTER_API_KEY`) in the shell that launches Claude Code, since the plugin folder has no `.env`. Runs and logs
-land under the plugin folder unless `S1A_HOME` names another root. Every host runs the command from a checkout of
+land under the plugin folder unless `S1A_HOME` names another root ([configuration.md](configuration.md)). Every host runs the command from a checkout of
 this repository.
 
 ### A ticket through the skill
